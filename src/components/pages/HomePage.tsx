@@ -22,16 +22,64 @@ export function HomePage() {
   const [chinese, setChinese] = useState("");
 
   const myConfig = {
-    nodeHighlightBehavior: true,
+    automaticRearrangeAfterDropNode: false,
+    collapsible: false,
+    directed: false,
+    focusAnimationDuration: 0.75,
+    focusZoom: 1,
+    height: 400,
+    highlightDegree: 1,
+    highlightOpacity: 1,
+    linkHighlightBehavior: false,
+    maxZoom: 8,
+    minZoom: 0.1,
+    nodeHighlightBehavior: false,
+    panAndZoom: false,
+    staticGraph: false,
+    staticGraphWithDragAndDrop: false,
     width: window.innerWidth - 20,
+    d3: {
+      alphaTarget: 0.05,
+      gravity: -100,
+      linkLength: 100,
+      linkStrength: 1
+    },
     node: {
-      color: "lightgreen",
-      size: 300,
-      fontSize: 15,
-      highlightStrokeColor: "blue"
+      color: "#d3d3d3",
+      fontColor: "black",
+      fontSize: 18,
+      fontWeight: "normal",
+      highlightColor: "SAME",
+      highlightFontSize: 8,
+      highlightFontWeight: "normal",
+      highlightStrokeColor: "SAME",
+      highlightStrokeWidth: "SAME",
+      labelProperty: "id",
+      mouseCursor: "pointer",
+      opacity: 1,
+      renderLabel: true,
+      size: 200,
+      strokeColor: "none",
+      strokeWidth: 1.5,
+      svg: "",
+      symbolType: "circle"
     },
     link: {
-      highlightColor: "lightblue"
+      color: "#d3d3d3",
+      fontColor: "black",
+      fontSize: 8,
+      fontWeight: "normal",
+      highlightColor: "#d3d3d3",
+      highlightFontSize: 8,
+      highlightFontWeight: "normal",
+      labelProperty: "label",
+      mouseCursor: "pointer",
+      opacity: 1,
+      renderLabel: false,
+      semanticStrokeWidth: false,
+      strokeWidth: 1.5,
+      markerHeight: 6,
+      markerWidth: 6
     }
   };
 
