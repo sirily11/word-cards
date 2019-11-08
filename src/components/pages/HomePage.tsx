@@ -63,6 +63,7 @@ export function HomePage() {
                 <Label>English</Label>
                 <Input
                   fluid
+                  value={english}
                   onChange={(e, { value }) => {
                     setEnglish(value);
                   }}
@@ -73,6 +74,7 @@ export function HomePage() {
               <Label>Chinese</Label>
               <Input
                 fluid
+                value={chinese}
                 onChange={(e, { value }) => {
                   setChinese(value);
                 }}
@@ -86,6 +88,8 @@ export function HomePage() {
         style={{ marginLeft: 10, marginTop: 10 }}
         onClick={() => {
           handleSubmit(english, chinese);
+          setEnglish("");
+          setChinese("");
         }}
       >
         {isSearch ? "Search" : "Add"}

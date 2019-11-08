@@ -36,7 +36,7 @@ export class WordCards {
             let _, db = new nedb({ filename: "words.db", autoload: true })
 
             if (chinese === undefined || chinese === "") {
-                const translate = setCORS("http://cors-anywhere.herokuapp.com/");
+                const translate = setCORS("https://cors-anywhere.herokuapp.com/");
                 let result = await translate(english, { to: "zh-CN" })
                 chinese = (result as any).text
             }

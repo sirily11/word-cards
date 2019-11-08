@@ -68,6 +68,7 @@
     "mac": "electron-builder -m",
     "all": "electron-builder -mw",
     "clean": "rm -rf dist",
+    "deploy": "gh-pages -d build",
     "electron-dev": " tsc public/electron.ts && concurrently \"BROWSER=none yarn start \" \"wait-on http://localhost:3000  && electron .\""
   },
   "build": {
@@ -94,6 +95,7 @@
     "concurrently": "^4.1.0",
     "electron": "^6.0.9",
     "electron-builder": "^21.2.0",
+    "gh-pages": "^2.1.1",
     "wait-on": "^3.2.0"
   },
   "files": [
