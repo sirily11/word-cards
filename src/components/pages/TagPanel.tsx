@@ -1,22 +1,18 @@
 import React, { useContext } from "react";
 import { HomePageContext } from "../models/HomeContext";
 import { Grid } from "semantic-ui-react";
-import {
-  Chip,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  ExpansionPanelDetails
-} from "@material-ui/core";
+import { Chip } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: "flex",
-      width: "100%",
+      justifyContent: "center",
       flexWrap: "wrap",
-      marginLeft: 10,
-      marginRight: 10
+      "& > *": {
+        margin: theme.spacing(0.5)
+      }
     }
   })
 );
@@ -35,23 +31,16 @@ export default function TagPanel() {
   } = homeModel;
   return (
     <div className={classes.root}>
-      <ExpansionPanel style={{ width: "100%" }}>
-        <ExpansionPanelSummary>
-          <h3>Words</h3>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          {wordCard.englishWords.map(e => (
-            <Chip
-              label={e}
-              key={e}
-              color="secondary"
-              onClick={() => {
-                handleEnglish(e);
-              }}
-            ></Chip>
-          ))}
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+      {wordCard.englishWords.map(e => (
+        <Chip
+          label={e}
+          key={e}
+          color="secondary"
+          onClick={() => {
+            handleEnglish(e);
+          }}
+        ></Chip>
+      ))}
     </div>
   );
 }
