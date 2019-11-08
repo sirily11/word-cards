@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { WordCards } from "./wordCards";
+import { WordCards, Word } from "./wordCards";
 
 interface Node {
   nodes: { id: string }[];
@@ -11,6 +11,7 @@ interface HomePageContext {
   isSearch: boolean;
   switchMode(isSearch: boolean): void;
   handleSubmit(english: string, chinese: string): void;
+  handleEnglish(english: string): void;
   graph?: Node;
   message?: any;
 }
@@ -27,7 +28,8 @@ export class HomePageProvider extends Component<
       wordCard: new WordCards(),
       isSearch: false,
       switchMode: this.switchMode,
-      handleSubmit: this.handleSubmit
+      handleSubmit: this.handleSubmit,
+      handleEnglish: this.handleEnglish
     };
   }
 
@@ -41,27 +43,32 @@ export class HomePageProvider extends Component<
     this.setState({ isSearch: newMode });
   };
 
+  private constructGraph = (words: Word[]): Node => {
+    let l: { source: string; target: string }[] = [];
+    let n: { id: string }[] = [];
+
+    words.forEach(r => {
+      r.words.forEach(w => {
+        l.push({ source: r.chinese, target: w });
+        n.push({ id: w });
+      });
+      n.push({ id: r.chinese });
+    });
+
+    let node: Node = {
+      nodes: n,
+      links: l
+    };
+    return node;
+  };
+
   handleSubmit = async (english: string, chinese: string) => {
     let { wordCard, isSearch } = this.state;
     if (isSearch) {
       if (chinese !== "") {
         let result = await wordCard.search(chinese);
         // link
-        let l: { source: string; target: string }[] = [];
-        let n: { id: string }[] = [];
-
-        result.forEach(r => {
-          r.words.forEach(w => {
-            l.push({ source: r.chinese, target: w });
-            n.push({ id: w });
-          });
-          n.push({ id: r.chinese });
-        });
-
-        let node: Node = {
-          nodes: n,
-          links: l
-        };
+        let node = this.constructGraph(result);
         if (node.links.length === 0 || node.nodes.length === 0) {
           alert("No data");
           return;
@@ -71,9 +78,23 @@ export class HomePageProvider extends Component<
     } else {
       if (english !== "") {
         let result = await wordCard.add_new_word(english, chinese);
-        this.setState({ message: result });
+        this.setState({ message: result, wordCard });
       }
     }
+  };
+
+  /**
+   * When user click on the tags
+   */
+  handleEnglish = async (english: string) => {
+    let { wordCard } = this.state;
+    let results = await wordCard.searchByEnglish(english);
+    let node = this.constructGraph(results);
+    if (node.links.length === 0 || node.nodes.length === 0) {
+      alert("No data");
+      return;
+    }
+    this.setState({ graph: node });
   };
 
   render() {
@@ -89,7 +110,8 @@ const context: HomePageContext = {
   wordCard: new WordCards(),
   isSearch: false,
   switchMode: (mode: boolean) => {},
-  handleSubmit: (english: string, chinese: string) => {}
+  handleSubmit: (english: string, chinese: string) => {},
+  handleEnglish: (english: string) => {}
 };
 
 export const HomePageContext = React.createContext(context);

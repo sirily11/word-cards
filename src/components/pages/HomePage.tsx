@@ -13,6 +13,7 @@ import {
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import { HomePageContext } from "../models/HomeContext";
+import TagPanel from "./TagPanel";
 const { Graph } = require("react-d3-graph");
 
 export function HomePage() {
@@ -132,6 +133,9 @@ export function HomePage() {
           <Divider vertical>Or</Divider>
         </Segment>
       </Card>
+
+      <TagPanel></TagPanel>
+
       <Button
         style={{ marginLeft: 10, marginTop: 10 }}
         onClick={() => {

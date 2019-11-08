@@ -10,20 +10,33 @@ export interface Word {
 
 export class WordCards {
     words: Word[]
+    englishWords: string[]
 
     constructor() {
         this.words = []
+        this.englishWords = []
     }
 
     /**
      * load data into memory. Call this when init
      */
-    async getDataFromDatabase() {
-        let _, db = new nedb({ filename: "words.db", autoload: true })
-        db.find<Word>({}, (err, docs) => {
-            if (err) console.log(err)
-            this.words = docs;
+    async getDataFromDatabase(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            let _, db = new nedb({ filename: "words.db", autoload: true })
+            db.find<Word>({}, (err, docs) => {
+                if (err) console.log(err)
+                this.words = docs;
+                docs.forEach((d) => {
+                    d.words.forEach((w) => {
+                        if (!this.englishWords.includes(w)) {
+                            this.englishWords.push(w)
+                        }
+                    })
+                })
+                resolve()
+            })
         })
+
     }
 
     /**
@@ -40,7 +53,7 @@ export class WordCards {
                 let result = await translate(english, { to: "zh-CN" })
                 chinese = (result as any).text
             }
-
+            if (!this.englishWords.includes(english)) this.englishWords.push(english)
             db.findOne<Word>({ chinese: chinese }, (err, docs) => {
                 console.log("Found one")
                 // if found one
@@ -68,6 +81,22 @@ export class WordCards {
             let _, db = new nedb({ filename: "words.db", autoload: true })
 
             db.find<Word>({ chinese: { $regex: RegExp(chinese) } }, (err, data) => {
+                if (err) console.log(err)
+                resolve(data)
+            })
+        })
+
+    }
+
+    /**
+    * Search text based on english
+    * @param english Chinese search keyword
+    */
+    async searchByEnglish(english: string): Promise<Word[]> {
+        return new Promise((resolve, reject) => {
+            let _, db = new nedb({ filename: "words.db", autoload: true })
+
+            db.find<Word>({ words: english }, (err, data) => {
                 if (err) console.log(err)
                 resolve(data)
             })
