@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { HomePageContext } from "../models/HomeContext";
+import { HomePageContext } from "../../models/HomeContext";
 import { Grid } from "semantic-ui-react";
 import { Chip } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
@@ -8,7 +8,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: "flex",
-      justifyContent: "center",
+      maxHeight: 400,
+      overflowY: "auto",
       flexWrap: "wrap",
       "& > *": {
         margin: theme.spacing(0.5)
@@ -27,7 +28,8 @@ export default function TagPanel() {
     graph,
     message,
     wordCard,
-    handleEnglish
+    handleEnglish,
+    update
   } = homeModel;
   return (
     <div className={classes.root}>
@@ -36,8 +38,12 @@ export default function TagPanel() {
           label={e}
           key={e}
           color="secondary"
-          onClick={() => {
-            handleEnglish(e);
+          onDelete={async ()=>{
+            await wordCard.deleteByEnglish(e)
+            update(wordCard)
+          }}
+          onClick={async () => {
+            await handleEnglish(e);
           }}
         ></Chip>
       ))}

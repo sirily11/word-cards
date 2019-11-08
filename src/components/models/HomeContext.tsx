@@ -12,6 +12,7 @@ interface HomePageContext {
   switchMode(isSearch: boolean): void;
   handleSubmit(english: string, chinese: string): void;
   handleEnglish(english: string): void;
+  update(word: WordCards): void
   graph?: Node;
   message?: any;
 }
@@ -29,15 +30,16 @@ export class HomePageProvider extends Component<
       isSearch: false,
       switchMode: this.switchMode,
       handleSubmit: this.handleSubmit,
-      handleEnglish: this.handleEnglish
+      handleEnglish: this.handleEnglish,
+      update: this.update
     };
   }
 
-  async componentWillMount() {
-    let wordCards = new WordCards();
-    await wordCards.getDataFromDatabase();
-    this.setState({ wordCard: wordCards });
-  }
+  // async componentWillMount() {
+  //   let wordCards = new WordCards();
+  //   // await wordCards.getDataFromDatabase();
+  //   this.setState({ wordCard: wordCards });
+  // }
 
   switchMode = (newMode: boolean) => {
     this.setState({ isSearch: newMode });
@@ -78,7 +80,9 @@ export class HomePageProvider extends Component<
     } else {
       if (english !== "") {
         let result = await wordCard.add_new_word(english, chinese);
-        this.setState({ message: result, wordCard });
+        let wordResult = await wordCard.searchByEnglish(english)
+        let node = this.constructGraph(wordResult)
+        this.setState({ message: result, wordCard, graph: node });
       }
     }
   };
@@ -97,6 +101,10 @@ export class HomePageProvider extends Component<
     this.setState({ graph: node });
   };
 
+  update = (word: WordCards) =>{
+    this.setState({wordCard: word})
+  }
+
   render() {
     return (
       <HomePageContext.Provider value={this.state}>
@@ -111,7 +119,8 @@ const context: HomePageContext = {
   isSearch: false,
   switchMode: (mode: boolean) => {},
   handleSubmit: (english: string, chinese: string) => {},
-  handleEnglish: (english: string) => {}
+  handleEnglish: (english: string) => {},
+  update: (word: WordCards) =>{}
 };
 
 export const HomePageContext = React.createContext(context);

@@ -12,7 +12,7 @@ import {
   Message
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
-import { HomePageContext } from "../models/HomeContext";
+import { HomePageContext } from "../../models/HomeContext";
 import TagPanel from "./TagPanel";
 const { Graph } = require("react-d3-graph");
 
@@ -107,34 +107,37 @@ export function HomePage() {
       <Card style={{ marginLeft: 10, marginRight: 10 }}>
         <Segment placeholder>
           <Grid columns={2} relaxed="very">
-            {!isSearch && (
-              <Grid.Column>
-                <Label>English</Label>
+            <Grid.Column>
+              {!isSearch && (
+                <Grid.Row style={{marginBottom: 10}}>
+                  <Input
+                    label="English"
+                    fluid
+                    value={english}
+                    onChange={(e, { value }) => {
+                      setEnglish(value);
+                    }}
+                  ></Input>
+                </Grid.Row>
+              )}
+              <Grid.Row>
                 <Input
+                  label="Chinese"
                   fluid
-                  value={english}
+                  value={chinese}
                   onChange={(e, { value }) => {
-                    setEnglish(value);
+                    setChinese(value);
                   }}
                 ></Input>
-              </Grid.Column>
-            )}
+              </Grid.Row>
+            </Grid.Column>
             <Grid.Column>
-              <Label>Chinese</Label>
-              <Input
-                fluid
-                value={chinese}
-                onChange={(e, { value }) => {
-                  setChinese(value);
-                }}
-              ></Input>
+              <TagPanel></TagPanel>
             </Grid.Column>
           </Grid>
           <Divider vertical>Or</Divider>
         </Segment>
       </Card>
-
-      <TagPanel></TagPanel>
 
       <Button
         style={{ marginLeft: 10, marginTop: 10 }}

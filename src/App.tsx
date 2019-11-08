@@ -6,7 +6,7 @@ import {
   AnimatedRoute,
   AnimatedSwitch
 } from "./components/plugins/react-router-transition";
-import { HomePage } from "./components/pages/HomePage";
+import { HomePage } from "./components/pages/home/HomePage";
 import { HomePageProvider } from "./components/models/HomeContext";
 
 class App extends Component {
