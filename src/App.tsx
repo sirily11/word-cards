@@ -7,23 +7,23 @@ import {
   AnimatedSwitch
 } from "./components/plugins/react-router-transition";
 import { HomePage } from "./components/pages/HomePage";
+import { HomePageProvider } from "./components/models/HomeContext";
 
 class App extends Component {
   render() {
     return (
-      <Router>
-       
-                  <AnimatedSwitch
-                    atEnter={{ opacity: 0 }}
-                    atLeave={{ opacity: 0 }}
-                    atActive={{ opacity: 1 }}
-                    className="switch-wrapper"
-                  >
-                    <Route exact path="/" component={HomePage} />
-                   
-                  </AnimatedSwitch>
-            
-      </Router>
+      <HomePageProvider>
+        <Router>
+          <AnimatedSwitch
+            atEnter={{ opacity: 0 }}
+            atLeave={{ opacity: 0 }}
+            atActive={{ opacity: 1 }}
+            className="switch-wrapper"
+          >
+            <Route exact path="/" component={HomePage} />
+          </AnimatedSwitch>
+        </Router>
+      </HomePageProvider>
     );
   }
 }
