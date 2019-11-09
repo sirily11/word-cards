@@ -13,6 +13,10 @@ interface HomePageContext {
   handleSubmit(english: string, chinese: string): void;
   handleEnglish(english: string): void;
   update(word: WordCards): void;
+  english: string;
+  chinese: string;
+  onEngChange(str: string): void;
+  onChnChange(str: string): void;
   graph?: Node;
   message?: any;
 }
@@ -31,7 +35,11 @@ export class HomePageProvider extends Component<
       switchMode: this.switchMode,
       handleSubmit: this.handleSubmit,
       handleEnglish: this.handleEnglish,
-      update: this.update
+      update: this.update,
+      english: "",
+      chinese: "",
+      onChnChange: this.onChnChange,
+      onEngChange: this.onEngChange
     };
   }
 
@@ -78,11 +86,18 @@ export class HomePageProvider extends Component<
         this.setState({ graph: node });
       }
     } else {
+      /// add word
       if (english !== "") {
         let result = await wordCard.add_new_word(english, chinese);
         let wordResult = await wordCard.searchByEnglish(english);
         let node = this.constructGraph(wordResult);
-        this.setState({ message: result, wordCard, graph: node });
+        this.setState({
+          message: result,
+          wordCard,
+          graph: node,
+          english: "",
+          chinese: ""
+        });
       }
     }
   };
@@ -112,6 +127,14 @@ export class HomePageProvider extends Component<
       </HomePageContext.Provider>
     );
   }
+
+  onEngChange = (str: string) => {
+    this.setState({ english: str });
+  };
+
+  onChnChange = (str: string) => {
+    this.setState({ chinese: str });
+  };
 }
 
 const context: HomePageContext = {
@@ -120,7 +143,11 @@ const context: HomePageContext = {
   switchMode: (mode: boolean) => {},
   handleSubmit: (english: string, chinese: string) => {},
   handleEnglish: (english: string) => {},
-  update: (word: WordCards) => {}
+  update: (word: WordCards) => {},
+  onChnChange: (str: string) => {},
+  onEngChange: (str: string) => {},
+  english: "",
+  chinese: ""
 };
 
 export const HomePageContext = React.createContext(context);

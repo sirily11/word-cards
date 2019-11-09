@@ -87,10 +87,12 @@ export function HomePage() {
     graph,
     message,
     wordCard,
-    update
+    update,
+    english,
+    chinese,
+    onChnChange,
+    onEngChange
   } = homeModel;
-  const [english, setEnglish] = useState("");
-  const [chinese, setChinese] = useState("");
   let fileInput = React.createRef<HTMLInputElement>();
 
   return (
@@ -158,7 +160,7 @@ export function HomePage() {
                     fluid
                     value={english}
                     onChange={(e, { value }) => {
-                      setEnglish(value);
+                      onEngChange(value);
                     }}
                   ></Input>
                 </Grid.Row>
@@ -169,7 +171,7 @@ export function HomePage() {
                   fluid
                   value={chinese}
                   onChange={(e, { value }) => {
-                    setChinese(value);
+                    onChnChange(value);
                   }}
                 ></Input>
               </Grid.Row>
@@ -183,10 +185,8 @@ export function HomePage() {
       </Card>
       <Button
         style={{ marginLeft: 10, marginTop: 10 }}
-        onClick={() => {
+        onClick={async () => {
           handleSubmit(english, chinese);
-          setEnglish("");
-          setChinese("");
         }}
       >
         {isSearch ? "Search" : "Add"}

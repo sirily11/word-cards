@@ -11,11 +11,13 @@ export interface Word {
 export class WordCards {
     words: Word[];
     englishWords: string[];
+    chineseWords: string[];
     db: Nedb<Word>
 
     constructor() {
         this.words = [];
         this.englishWords = [];
+        this.chineseWords = []
         this.db = new nedb({ filename: "words.db", autoload: true });
     }
 
@@ -24,12 +26,13 @@ export class WordCards {
      */
     async getDataFromDatabase(): Promise<void> {
         return new Promise((resolve, reject) => {
-            let _,
-                db = new nedb({ filename: "words.db", autoload: true });
-            db.find<Word>({}, (err, docs) => {
+            // clear all
+            this.englishWords = []
+            this.chineseWords = []
+            this.db.find<Word>({}, (err, docs) => {
                 if (err) console.log(err);
-                // this.words = docs;
                 docs.forEach(d => {
+                    this.chineseWords.push(d.chinese)
                     d.words.forEach(w => {
                         if (!this.englishWords.includes(w)) {
                             this.englishWords.push(w);
@@ -51,7 +54,6 @@ export class WordCards {
         chinese: string | undefined
     ): Promise<{ english: string; chinese: string }> {
         return new Promise(async (resolve, reject) => {
-
             /// If no chinese has been set, use google translate
             /// but will ask user if use the translation from google.
             /// If not, return and throw error.
@@ -86,6 +88,7 @@ export class WordCards {
                         { words: [english], chinese: chinese as string },
                         (err, docs) => {
                             if (err) console.log(err);
+                            this.chineseWords.push(chinese as string)
                             resolve({ english: english, chinese: chinese as string });
                         }
                     );
@@ -139,6 +142,28 @@ export class WordCards {
                     }
                     if (numberOfUpdate > 0) {
                         this.englishWords.splice(this.englishWords.indexOf(english), 1);
+                        resolve(true);
+                    } else {
+                        reject(false);
+                    }
+                }
+            );
+        });
+    }
+
+    async deleteByChinese(chinese: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            this.db.remove(
+                { chinese: chinese },
+                async (err, numberOfUpdate) => {
+                    console.log(numberOfUpdate);
+                    if (err) {
+                        console.log(err);
+                        reject(false);
+                    }
+                    if (numberOfUpdate > 0) {
+                        // refetch
+                        await this.getDataFromDatabase()
                         resolve(true);
                     } else {
                         reject(false);

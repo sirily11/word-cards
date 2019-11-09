@@ -29,24 +29,45 @@ export default function TagPanel() {
     message,
     wordCard,
     handleEnglish,
-    update
+    update,
+    english,
+    chinese
   } = homeModel;
   return (
     <div className={classes.root}>
-      {wordCard.englishWords.map(e => (
-        <Chip
-          label={e}
-          key={e}
-          color="secondary"
-          onDelete={async ()=>{
-            await wordCard.deleteByEnglish(e)
-            update(wordCard)
-          }}
-          onClick={async () => {
-            await handleEnglish(e);
-          }}
-        ></Chip>
-      ))}
+      {isSearch
+        ? wordCard.chineseWords
+            .filter(c => c.includes(chinese))
+            .map(e => (
+              <Chip
+                label={e}
+                key={e}
+                color="secondary"
+                onDelete={async () => {
+                  await wordCard.deleteByChinese(e);
+                  update(wordCard);
+                }}
+                onClick={async () => {
+                  handleSubmit("", e);
+                }}
+              ></Chip>
+            ))
+        : wordCard.englishWords
+            .filter(e => e.includes(english))
+            .map(e => (
+              <Chip
+                label={e}
+                key={e}
+                color="secondary"
+                onDelete={async () => {
+                  await wordCard.deleteByEnglish(e);
+                  update(wordCard);
+                }}
+                onClick={async () => {
+                  await handleEnglish(e);
+                }}
+              ></Chip>
+            ))}
     </div>
   );
 }
