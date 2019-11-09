@@ -7,10 +7,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
       - run: yarn install
-      - run: yarn build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v2.5.0
         env:
           ACTIONS_DEPLOY_KEY: ${{ secrets.ACCESS_TOKEN }}
-          PUBLISH_BRANCH: gh-pages
-          PUBLISH_DIR: ./build
+          BASE_BRANCH: master # The branch the action should deploy from.
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: build # The folder the action should deploy.
+          BUILD_SCRIPT: yarn build # The build script the action should run prior to deploying.
