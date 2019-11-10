@@ -51,7 +51,8 @@ export class WordCards {
      */
     async add_new_word(
         english: string,
-        chinese: string | undefined
+        chinese: string | undefined,
+        userCheck: boolean = true
     ): Promise<{ english: string; chinese: string }> {
         return new Promise(async (resolve, reject) => {
             /// If no chinese has been set, use google translate
@@ -60,14 +61,18 @@ export class WordCards {
             if (chinese === undefined || chinese === "") {
                 const translate = setCORS("https://cors-anywhere.herokuapp.com/");
                 let result = await translate(english, { to: "zh-CN" });
-                let willUseGoogleTranslate = window.confirm(
-                    `Will you use translation ${(result as any).text}?`
-                );
-                if (willUseGoogleTranslate) {
-                    chinese = (result as any).text;
+                if (userCheck) {
+                    let willUseGoogleTranslate = window.confirm(
+                        `Will you use translation ${(result as any).text}?`
+                    );
+                    if (willUseGoogleTranslate) {
+                        chinese = (result as any).text;
+                    } else {
+                        alert("No chinese for this word");
+                        return;
+                    }
                 } else {
-                    alert("No chinese for this word");
-                    return;
+                    chinese = (result as any).text;
                 }
             }
             if (!this.englishWords.includes(english)) this.englishWords.push(english);
@@ -192,21 +197,26 @@ export class WordCards {
      * Load local file
      * @param file JSON data file
      */
-    async loadLocalFile(file: File) {
+    async loadLocalFile(file: File, callback: (progress: number) => void) {
         return new Promise((resolve, reject) => {
             let fileReader = new FileReader()
             fileReader.onloadend = async (e) => {
-                let content = fileReader.result
-                let json: Word[] = JSON.parse(content as string)
-                for (let w of json) {
-                    await this.addLoc(w)
-                    w.words.forEach((word) => {
-                        if (!this.englishWords.includes(word)) {
-                            this.englishWords.push(word)
-                        }
-                    })
+                try {
+                    let content = fileReader.result
+                    let json: Word[] = JSON.parse(content as string)
+                    let i = 0
+                    for (let w of json) {
+                        await this.addLoc(w)
+                        i += 1
+                        // await new Promise((resolve => setTimeout(resolve, 15)))
+                        callback((i / json.length) * 100)
+                    }
+                    await this.getDataFromDatabase()
+                    resolve()
+                } catch (err) {
+                    alert(err)
                 }
-                resolve()
+
             }
             fileReader.readAsText(file)
         })

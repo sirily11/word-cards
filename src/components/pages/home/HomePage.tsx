@@ -10,7 +10,8 @@ import {
   Label,
   Input,
   Message,
-  Icon
+  Icon,
+  Progress
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import { HomePageContext } from "../../models/HomeContext";
@@ -91,9 +92,14 @@ export function HomePage() {
     english,
     chinese,
     onChnChange,
-    onEngChange
+    onEngChange,
+    importWords
   } = homeModel;
   let fileInput = React.createRef<HTMLInputElement>();
+  /// to import words
+  let fileInput2 = React.createRef<HTMLInputElement>();
+
+  const [progress, setprogress] = useState<number | undefined>();
 
   return (
     <div style={{ marginLeft: 20, marginRight: 20 }} id="home">
@@ -131,14 +137,48 @@ export function HomePage() {
             onChange={async e => {
               let file = e.target.files && e.target.files[0];
               if (file) {
-                await wordCard.loadLocalFile(file);
-                console.log("finished");
+                await wordCard.loadLocalFile(file, number =>
+                  setprogress(number)
+                );
+                setprogress(undefined);
                 update(wordCard);
               }
             }}
           />
           <Icon name="folder open"></Icon>
         </Button>
+        <Button
+          icon
+          loading={progress !== undefined}
+          onClick={() => {
+            fileInput2.current && fileInput2.current.click();
+          }}
+        >
+          <input
+            ref={fileInput2}
+            type="file"
+            style={{ display: "none" }}
+            onChange={async e => {
+              let file = e.target.files && e.target.files[0];
+              let fileReader = new FileReader();
+              fileReader.onloadend = async e => {
+                let content = fileReader.result;
+                let data: any[] = JSON.parse(content as string);
+
+                await importWords(data, progress => {
+                  setprogress(progress);
+                });
+                update(wordCard);
+                setprogress(undefined);
+              };
+              fileReader.readAsText(file as File);
+            }}
+          />
+          <Icon name="upload"></Icon>
+        </Button>
+        {progress && (
+          <Progress percent={progress} progress precision={2}></Progress>
+        )}
       </Grid.Row>
 
       {message && (
@@ -176,7 +216,7 @@ export function HomePage() {
                 ></Input>
               </Grid.Row>
             </Grid.Column>
-            <Grid.Column>
+            <Grid.Column style={{ height: 400 }}>
               <TagPanel></TagPanel>
             </Grid.Column>
           </Grid>

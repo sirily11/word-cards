@@ -13,6 +13,10 @@ interface HomePageContext {
   handleSubmit(english: string, chinese: string): void;
   handleEnglish(english: string): void;
   update(word: WordCards): void;
+  importWords(
+    words: { word: string }[],
+    onImport: (progress: number) => void
+  ): Promise<void>;
   english: string;
   chinese: string;
   onEngChange(str: string): void;
@@ -39,7 +43,8 @@ export class HomePageProvider extends Component<
       english: "",
       chinese: "",
       onChnChange: this.onChnChange,
-      onEngChange: this.onEngChange
+      onEngChange: this.onEngChange,
+      importWords: this.importWords
     };
   }
 
@@ -70,6 +75,32 @@ export class HomePageProvider extends Component<
       links: l
     };
     return node;
+  };
+
+  /**
+   * Import words from file, this is not load previous database
+   */
+  importWords = async (
+    words: { word: string; translations: string[] }[],
+    onImport: (progress: number) => void
+  ): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let i = 0;
+        let { wordCard, isSearch } = this.state;
+        for (let w of words) {
+          for (let t of w.translations) {
+            let result = await wordCard.add_new_word(w.word, t);
+          }
+          i = i + 1;
+          onImport((i / words.length) * 100);
+        }
+      } catch (err) {
+        alert("Data error");
+        reject();
+      }
+      resolve();
+    });
   };
 
   handleSubmit = async (english: string, chinese: string) => {
@@ -146,6 +177,12 @@ const context: HomePageContext = {
   update: (word: WordCards) => {},
   onChnChange: (str: string) => {},
   onEngChange: (str: string) => {},
+  importWords: (
+    words: { word: string }[],
+    onImport: (progress: number) => void
+  ) => {
+    return Promise.resolve();
+  },
   english: "",
   chinese: ""
 };
